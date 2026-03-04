@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ShopBiz
+
+ShopBiz is a full-stack ecommerce app built with Next.js App Router, MongoDB (via Prisma), NextAuth (JWT sessions), Stripe-ready checkout, and Tailwind CSS.
+
+## Features
+
+- Next.js full-stack architecture (server components + API routes)
+- MongoDB data layer using Prisma ORM
+- NextAuth credentials login with JWT token sessions and role-based access (`ADMIN`, `USER`)
+- Product catalog with categories and search/filtering
+- Cart + checkout flow with Stripe Elements + webhook-based payment verification
+- Orders management for users and admin
+- Admin dashboard for stats, product management, and order status updates
+- Responsive UI with animation and 3D hero section
+- SEO basics: metadata, Open Graph, robots, sitemap
+
+## Environment
+
+Create `.env` from `.env.example` and set:
+
+- `DATABASE_URL` (MongoDB connection string)
+- `NEXTAUTH_URL`
+- `NEXTAUTH_SECRET`
+- `NEXT_PUBLIC_APP_URL`
+- `STRIPE_SECRET_KEY`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `STRIPE_WEBHOOK_SECRET`
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
+npm run db:generate
+npm run db:push
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Seeded Accounts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Admin: `admin@shopbiz.com` / `Admin@123`
+- User: `user@shopbiz.com` / `User@123`
 
-## Learn More
+## API Overview
 
-To learn more about Next.js, take a look at the following resources:
+- `POST /api/register`
+- `GET,POST /api/categories`
+- `GET,POST /api/products`
+- `GET,PUT,DELETE /api/products/:id`
+- `GET,POST /api/orders`
+- `GET,PATCH /api/orders/:id`
+- `POST /api/payments/checkout`
+- `POST /api/payments/webhook`
+- `GET /api/admin/stats`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Stripe orders are created in `PENDING` state and only marked `PAID` by verified Stripe webhook events.
+- `/admin/*` routes are protected for admin role only.
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

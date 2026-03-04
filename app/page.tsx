@@ -1,65 +1,85 @@
-import Image from "next/image";
+import Link from "next/link";
+import { prisma } from "@/src/lib/db";
+import ProductCard from "@/src/components/ui/product-card";
+import AnimatedSection from "@/src/components/ui/animated-section";
+import HeroCanvas from "@/src/components/three/hero-canvas";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const [featured, categories] = await Promise.all([
+    prisma.product.findMany({
+      where: { featured: true },
+      include: { category: true },
+      orderBy: { createdAt: "desc" },
+      take: 8,
+    }),
+    prisma.category.findMany({ orderBy: { name: "asc" }, take: 8 }),
+  ]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="page-shell space-y-16">
+      <AnimatedSection className="grid items-center gap-10 lg:grid-cols-2">
+        <div className="space-y-6">
+          <p className="inline-block rounded-full border border-cyan-300/40 bg-cyan-300/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-cyan-100">
+            Full Stack Ecommerce
           </p>
+          <h1 className="text-4xl font-black leading-tight text-white sm:text-5xl">
+            Shopbiz powers products, payments, and orders in one seamless platform.
+          </h1>
+          <p className="max-w-xl text-base text-slate-300 sm:text-lg">
+            Animated storefront, role-based access, order lifecycle management, and Stripe-ready checkout built with
+            Next.js, Prisma, and token auth sessions.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/products" className="rounded-full bg-cyan-300 px-5 py-2 font-bold text-slate-950">
+              Explore Products
+            </Link>
+            <Link href="/register" className="rounded-full border border-white/30 px-5 py-2 font-bold text-slate-100">
+              Create Account
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <HeroCanvas />
+      </AnimatedSection>
+
+      <AnimatedSection delay={0.1} className="space-y-5">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-extrabold text-white">Popular Categories</h2>
+          <Link href="/products" className="text-sm font-semibold text-cyan-300">
+            View all
+          </Link>
         </div>
-      </main>
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+          {categories.map((category) => (
+            <Link
+              key={category.id}
+              href={`/products?category=${category.slug}`}
+              className="glass rounded-xl p-4 transition hover:border-cyan-300/50"
+            >
+              <h3 className="text-lg font-bold text-white">{category.name}</h3>
+              <p className="mt-1 text-sm text-slate-300">{category.description || "Curated top picks"}</p>
+            </Link>
+          ))}
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection delay={0.2} className="space-y-5">
+        <h2 className="text-2xl font-extrabold text-white">Featured Products</h2>
+        {featured.length ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {featured.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-xl border border-white/20 bg-white/5 p-5 text-slate-300">
+            No featured products yet. Add some from the admin panel.
+          </p>
+        )}
+      </AnimatedSection>
     </div>
   );
 }
+
+
