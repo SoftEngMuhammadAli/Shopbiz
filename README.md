@@ -59,5 +59,3 @@ Open `http://localhost:3000`.
 
 - Stripe orders are created in `PENDING` state and only marked `PAID` by verified Stripe webhook events.
 - `/admin/*` routes are protected for admin role only.
-
-
