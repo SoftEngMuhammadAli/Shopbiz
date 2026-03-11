@@ -27,6 +27,11 @@ const DashboardPage = () => {
       <section>
         <Transaction />
       </section>
+
+      {/* Chart Section */}
+      <section>
+        <Chart />
+      </section>
     </div>
   );
 };

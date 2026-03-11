@@ -40,7 +40,7 @@ const NavBar = () => {
 
         <div className={styles.user}>
           <Image
-            src="/noavatar.png"
+            src="/images/noavatar.png"
             alt="User Avatar"
             width={32}
             height={32}

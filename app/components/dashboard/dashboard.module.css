@@ -4,6 +4,7 @@
   background: var(--bg-color);
 }
 
+/* Sidebar */
 .menu {
   width: 260px;
   min-width: 260px;
@@ -12,6 +13,7 @@
   border-right: 1px solid var(--border-color);
 }
 
+/* Main layout */
 .main {
   flex: 1;
   min-width: 0;
@@ -19,10 +21,34 @@
   flex-direction: column;
 }
 
+/* Page wrapper (Content + RightBar) */
+.page {
+  flex: 1;
+  display: flex;
+  width: 100%;
+}
+
+/* Main Content */
 .content {
   flex: 1;
   padding: 24px 28px;
   background: var(--bg-color);
+}
+
+/* Right Sidebar */
+.rightbar {
+  width: 300px;
+  min-width: 300px;
+  border-left: 1px solid var(--border-color);
+  background: var(--bg-soft);
+  padding: 20px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .rightbar {
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {

@@ -1,0 +1,35 @@
+.container {
+  width: 100%;
+  padding: 18px 28px;
+  margin-top: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: var(--bg-soft);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Logo / Brand */
+.logo {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--text);
+}
+
+/* Footer Text */
+.text {
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+}

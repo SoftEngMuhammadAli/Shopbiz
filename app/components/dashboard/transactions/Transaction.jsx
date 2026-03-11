@@ -6,7 +6,7 @@ const transactions = [
   {
     id: 1,
     name: "John Doe",
-    img: "/noavatar.png",
+    img: "/images/noavatar.png",
     status: "pending",
     date: "14.02.2023",
     amount: "$3,200",
@@ -14,7 +14,7 @@ const transactions = [
   {
     id: 2,
     name: "Sarah Johnson",
-    img: "/noavatar.png",
+    img: "/images/noavatar.png",
     status: "success",
     date: "13.02.2023",
     amount: "$1,450",
@@ -22,7 +22,7 @@ const transactions = [
   {
     id: 3,
     name: "Michael Brown",
-    img: "/noavatar.png",
+    img: "/images/noavatar.png",
     status: "failed",
     date: "12.02.2023",
     amount: "$720",
@@ -30,7 +30,7 @@ const transactions = [
   {
     id: 4,
     name: "Emily Davis",
-    img: "/noavatar.png",
+    img: "/images/noavatar.png",
     status: "pending",
     date: "11.02.2023",
     amount: "$980",
@@ -38,7 +38,7 @@ const transactions = [
   {
     id: 5,
     name: "Daniel Wilson",
-    img: "/noavatar.png",
+    img: "/images/noavatar.png",
     status: "success",
     date: "10.02.2023",
     amount: "$2,540",
