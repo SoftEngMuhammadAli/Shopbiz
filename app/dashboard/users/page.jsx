@@ -1,74 +1,103 @@
 "use client";
-import React, { useState, useMemo } from "react";
+
+import React, { useState, useMemo, useEffect } from "react";
 import styles from "../../components/dashboard/users/users.module.css";
 import { MdAdd } from "react-icons/md";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { DELETEUSER, GETUSERS } from "../../lib/services/api.services";
 
-const users = [
-  {
-    id: 1,
-    name: "hello",
-    email: "hello@gmail.com",
-    role: "client",
-    created: "Oct 30 2023",
-    img: "/images/noavatar.png",
-  },
-  {
-    id: 2,
-    name: "jane",
-    email: "janedoe@gmail.com",
-    role: "client",
-    created: "Oct 29 2023",
-    img: "/images/noavatar.png",
-  },
-  {
-    id: 3,
-    name: "John Doe",
-    email: "john@example.com",
-    role: "admin",
-    created: "Oct 28 2023",
-    img: "/images/noavatar.png",
-  },
-  {
-    id: 4,
-    name: "Sarah Smith",
-    email: "sarah@example.com",
-    role: "editor",
-    created: "Oct 27 2023",
-    img: "/images/noavatar.png",
-  },
-  {
-    id: 5,
-    name: "Emma Brown",
-    email: "emma@example.com",
-    role: "manager",
-    created: "Oct 26 2023",
-    img: "/images/noavatar.png",
-  },
-];
-
-const USERS_PER_PAGE = 2;
+const USERS_PER_PAGE = 10;
 
 const UsersPage = () => {
-  const router = useRouter(); // ✅ correct usage
+  const router = useRouter();
 
+  const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [deleteUser, setDeleteUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [deletingId, setDeletingId] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadUsers = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const data = await GETUSERS();
+
+        if (isMounted) {
+          setUsers(data);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err.message || "Failed to load users");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadUsers();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filteredUsers = useMemo(() => {
     return users.filter(
       (u) =>
-        u.name.toLowerCase().includes(search.toLowerCase()) ||
-        u.email.toLowerCase().includes(search.toLowerCase()),
+        u.name?.toLowerCase().includes(search.toLowerCase()) ||
+        u.email?.toLowerCase().includes(search.toLowerCase()),
     );
-  }, [search]);
+  }, [users, search]);
 
-  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredUsers.length / USERS_PER_PAGE),
+  );
 
   const start = (page - 1) * USERS_PER_PAGE;
   const paginatedUsers = filteredUsers.slice(start, start + USERS_PER_PAGE);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  const handleDeleteUser = async () => {
+    if (!deleteUser?._id) {
+      return;
+    }
+
+    setDeletingId(deleteUser._id);
+    setError("");
+
+    try {
+      await DELETEUSER(deleteUser._id);
+
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => user._id !== deleteUser._id),
+      );
+      setDeleteUser(null);
+    } catch (err) {
+      setError(err.message || "Failed to delete user");
+    } finally {
+      setDeletingId("");
+    }
+  };
+
+  if (loading) {
+    return <p className="p-6">Loading users...</p>;
+  }
 
   return (
     <section className="p-6">
@@ -109,12 +138,23 @@ const UsersPage = () => {
           </thead>
 
           <tbody>
+            {paginatedUsers.length === 0 && (
+              <tr>
+                <td
+                  colSpan={5}
+                  style={{ textAlign: "center", padding: "16px" }}
+                >
+                  No users found.
+                </td>
+              </tr>
+            )}
+
             {paginatedUsers.map((user) => (
-              <tr key={user.id}>
+              <tr key={user._id}>
                 <td>
                   <div className={styles.user}>
                     <Image
-                      src={user.img}
+                      src={user.img || "/images/noavatar.png"}
                       alt=""
                       width={40}
                       height={40}
@@ -125,14 +165,18 @@ const UsersPage = () => {
                 </td>
 
                 <td>{user.email}</td>
-                <td>{user.created}</td>
+
+                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+
                 <td>{user.role}</td>
 
                 <td>
                   <div className={styles.buttons}>
                     <button
                       className={styles.view}
-                      onClick={() => router.push(`/dashboard/users/${user.id}`)}
+                      onClick={() =>
+                        router.push(`/dashboard/users/${user._id}`)
+                      }
                     >
                       View
                     </button>
@@ -150,6 +194,8 @@ const UsersPage = () => {
           </tbody>
         </table>
       </div>
+
+      {error && <p className="p-4 text-red-500">{error}</p>}
 
       {/* Pagination */}
       <div className={styles.pagination}>
@@ -185,12 +231,10 @@ const UsersPage = () => {
 
               <button
                 className={styles.confirmDelete}
-                onClick={() => {
-                  console.log("Delete user:", deleteUser.id);
-                  setDeleteUser(null);
-                }}
+                onClick={handleDeleteUser}
+                disabled={deletingId === deleteUser._id}
               >
-                Delete
+                {deletingId === deleteUser._id ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>
