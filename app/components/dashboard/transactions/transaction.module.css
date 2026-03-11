@@ -1,0 +1,107 @@
+.container {
+  background: var(--bg-soft);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+/* Table */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead td {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table tbody td {
+  padding: 14px 10px;
+  font-size: 14px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table tbody tr:hover {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+/* User cell */
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userImage {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Status */
+
+.status {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Status Colors */
+
+.pending {
+  background: rgba(255, 193, 7, 0.15);
+  color: #facc15;
+}
+
+.success {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.failed {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .table thead {
+    display: none;
+  }
+
+  .table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table tr {
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+  }
+}
