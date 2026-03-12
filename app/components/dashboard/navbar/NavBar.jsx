@@ -6,13 +6,14 @@ import styles from "./navbar.module.css";
 import { usePathname } from "next/navigation";
 
 import {
+  MdMenu,
   MdOutlineMessage,
   MdOutlineNotifications,
   MdOutlineSearch,
   MdOutlineWeb,
 } from "react-icons/md";
 
-const NavBar = () => {
+const NavBar = ({ onMenuToggle }) => {
   const pathName = usePathname();
 
   const title =
@@ -22,8 +23,17 @@ const NavBar = () => {
 
   return (
     <div className={styles.container}>
-      {/* Page Title */}
-      <div className={styles.title}>{title}</div>
+      <div className={styles.left}>
+        <button
+          type="button"
+          className={styles.menuBtn}
+          onClick={onMenuToggle}
+          aria-label="Open sidebar"
+        >
+          <MdMenu />
+        </button>
+        <div className={styles.title}>{title}</div>
+      </div>
 
       {/* Right Section */}
       <div className={styles.right}>

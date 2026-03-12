@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./sidebar.module.css";
+import LogoutButton from "./LogoutButton";
 
 import {
   MdAnalytics,
@@ -15,7 +18,7 @@ import {
   MdWork,
 } from "react-icons/md";
 
-const SideBar = () => {
+const SideBar = ({ onNavigate }) => {
   const menuItems = [
     {
       title: "Pages",
@@ -42,16 +45,8 @@ const SideBar = () => {
       title: "Analytics",
       list: [
         { title: "Revenue", path: "/dashboard/revenue", icon: <MdWork /> },
-        {
-          title: "Report",
-          path: "/dashboard/report",
-          icon: <MdAnalytics />,
-        },
-        {
-          title: "Teams",
-          path: "/dashboard/teams",
-          icon: <MdPeople />,
-        },
+        { title: "Report", path: "/dashboard/report", icon: <MdAnalytics /> },
+        { title: "Teams", path: "/dashboard/teams", icon: <MdPeople /> },
       ],
     },
     {
@@ -62,21 +57,18 @@ const SideBar = () => {
           path: "/dashboard/settings",
           icon: <MdSettings />,
         },
-        {
-          title: "Help",
-          path: "/dashboard/help",
-          icon: <MdHelp />,
-        },
+        { title: "Help", path: "/dashboard/help", icon: <MdHelp /> },
       ],
     },
   ];
 
   return (
     <div className={styles.container}>
+      {/* User Profile */}
       <div className={styles.user}>
         <Image
           src="/images/noavatar.png"
-          alt="John Doe"
+          alt="User avatar"
           width={50}
           height={50}
           className={styles.userImage}
@@ -87,13 +79,19 @@ const SideBar = () => {
         </div>
       </div>
 
+      {/* Menu */}
       {menuItems.map((cat) => (
         <div key={cat.title} className={styles.cat}>
           <span className={styles.catTitle}>{cat.title}</span>
 
           <div className={styles.nav}>
             {cat.list.map((item) => (
-              <Link key={item.path} href={item.path} className={styles.item}>
+              <Link
+                key={item.path}
+                href={item.path}
+                className={styles.item}
+                onClick={onNavigate}
+              >
                 <span className={styles.icon}>{item.icon}</span>
                 <span>{item.title}</span>
               </Link>
@@ -102,7 +100,8 @@ const SideBar = () => {
         </div>
       ))}
 
-      <button className={styles.logout}>Sign Out</button>
+      {/* Logout */}
+      <LogoutButton onBeforeLogout={onNavigate} />
     </div>
   );
 };

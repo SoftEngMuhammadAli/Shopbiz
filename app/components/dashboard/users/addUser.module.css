@@ -68,3 +68,13 @@
 .button:active {
   transform: scale(0.97);
 }
+
+@media (max-width: 900px) {
+  .container {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+}

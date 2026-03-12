@@ -51,3 +51,20 @@
   border-radius: 8px;
   color: white;
 }
+
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+    gap: 16px;
+    padding: 0;
+  }
+
+  .imageCard {
+    width: 100%;
+  }
+
+  .details {
+    width: 100%;
+    padding: 16px;
+  }
+}

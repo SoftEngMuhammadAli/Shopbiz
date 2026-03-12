@@ -14,6 +14,7 @@
 .searchContainer {
   display: flex;
   gap: 12px;
+  align-items: center;
 }
 
 .search {
@@ -44,11 +45,13 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
+  overflow-x: auto;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 760px;
 }
 
 .table th {
@@ -140,4 +143,31 @@
   border: none;
   background: #ef4444;
   color: white;
+}
+
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .searchContainer {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .addButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal {
+    width: calc(100% - 24px);
+    max-width: 400px;
+  }
 }

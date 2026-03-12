@@ -34,3 +34,9 @@
   color: white;
   cursor: pointer;
 }
+
+@media (max-width: 900px) {
+  .container {
+    padding: 16px;
+  }
+}
