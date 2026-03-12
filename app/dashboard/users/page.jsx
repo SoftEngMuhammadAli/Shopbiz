@@ -1,131 +1,50 @@
-"use client";
-
-import React, { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import styles from "../../components/dashboard/users/users.module.css";
 import { MdAdd } from "react-icons/md";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { DELETEUSER, GETUSERS } from "../../lib/services/api.services";
-import Pagination from "../../components/dashboard/pagination/Pagination";
+import { deleteUserAction, getUsers } from "../../lib/actions";
 
-const USERS_PER_PAGE = 10;
+const UsersPage = async ({ searchParams }) => {
+  const resolvedSearchParams = await searchParams;
+  const query = String(resolvedSearchParams?.q || "").toLowerCase().trim();
+  const error = resolvedSearchParams?.error
+    ? String(resolvedSearchParams.error)
+    : "";
 
-const UsersPage = () => {
-  const router = useRouter();
+  const response = await getUsers();
+  const users = response.success ? response.users || [] : [];
 
-  const [users, setUsers] = useState([]);
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [deleteUser, setDeleteUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [deletingId, setDeletingId] = useState("");
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadUsers = async () => {
-      setLoading(true);
-      setError("");
-
-      try {
-        const data = await GETUSERS();
-
-        if (isMounted) {
-          setUsers(data);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err.message || "Failed to load users");
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadUsers();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const filteredUsers = useMemo(() => {
-    return users.filter(
-      (u) =>
-        u.name?.toLowerCase().includes(search.toLowerCase()) ||
-        u.email?.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [users, search]);
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredUsers.length / USERS_PER_PAGE),
-  );
-
-  const start = (page - 1) * USERS_PER_PAGE;
-  const paginatedUsers = filteredUsers.slice(start, start + USERS_PER_PAGE);
-
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages);
-    }
-  }, [page, totalPages]);
-
-  const handleDeleteUser = async () => {
-    if (!deleteUser?._id) {
-      return;
-    }
-
-    setDeletingId(deleteUser._id);
-    setError("");
-
-    try {
-      await DELETEUSER(deleteUser._id);
-
-      setUsers((prevUsers) =>
-        prevUsers.filter((user) => user._id !== deleteUser._id),
-      );
-      setDeleteUser(null);
-    } catch (err) {
-      setError(err.message || "Failed to delete user");
-    } finally {
-      setDeletingId("");
-    }
-  };
-
-  if (loading) {
-    return <p className="p-6">Loading users...</p>;
-  }
+  const filteredUsers = query
+    ? users.filter(
+        (u) =>
+          u.name?.toLowerCase().includes(query) ||
+          u.email?.toLowerCase().includes(query),
+      )
+    : users;
 
   return (
     <section className="p-6">
-      {/* Header */}
       <div className={styles.header}>
         <h2 className={styles.title}>Users</h2>
 
         <div className={styles.searchContainer}>
-          <input
-            type="text"
-            placeholder="Search for a user..."
-            className={styles.search}
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-          />
+          <form method="GET" style={{ display: "contents" }}>
+            <input
+              type="text"
+              name="q"
+              placeholder="Search for a user..."
+              className={styles.search}
+              defaultValue={query}
+            />
+          </form>
 
-          <button className={styles.addButton}>
+          <Link href="/dashboard/users/add" className={styles.addButton}>
             <MdAdd size={20} />
             Add New
-          </button>
+          </Link>
         </div>
       </div>
 
-      {/* Table */}
       <div className={styles.tableContainer}>
         <table className={styles.table}>
           <thead>
@@ -139,7 +58,7 @@ const UsersPage = () => {
           </thead>
 
           <tbody>
-            {paginatedUsers.length === 0 && (
+            {filteredUsers.length === 0 && (
               <tr>
                 <td
                   colSpan={5}
@@ -150,7 +69,7 @@ const UsersPage = () => {
               </tr>
             )}
 
-            {paginatedUsers.map((user) => (
+            {filteredUsers.map((user) => (
               <tr key={user._id}>
                 <td>
                   <div className={styles.user}>
@@ -164,30 +83,20 @@ const UsersPage = () => {
                     {user.name}
                   </div>
                 </td>
-
                 <td>{user.email}</td>
-
                 <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-
                 <td>{user.role}</td>
-
                 <td>
                   <div className={styles.buttons}>
-                    <button
-                      className={styles.view}
-                      onClick={() =>
-                        router.push(`/dashboard/users/${user._id}`)
-                      }
-                    >
+                    <Link href={`/dashboard/users/${user._id}`} className={styles.view}>
                       View
-                    </button>
-
-                    <button
-                      className={styles.delete}
-                      onClick={() => setDeleteUser(user)}
-                    >
-                      Delete
-                    </button>
+                    </Link>
+                    <form action={deleteUserAction}>
+                      <input type="hidden" name="id" value={user._id} />
+                      <button type="submit" className={styles.delete}>
+                        Delete
+                      </button>
+                    </form>
                   </div>
                 </td>
               </tr>
@@ -196,39 +105,8 @@ const UsersPage = () => {
         </table>
       </div>
 
+      {!response.success && <p className="p-4 text-red-500">{response.message}</p>}
       {error && <p className="p-4 text-red-500">{error}</p>}
-
-      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-
-      {/* Delete Modal */}
-      {deleteUser && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h3>Delete User</h3>
-
-            <p>
-              Are you sure you want to delete <b>{deleteUser.name}</b>?
-            </p>
-
-            <div className={styles.modalButtons}>
-              <button
-                className={styles.cancel}
-                onClick={() => setDeleteUser(null)}
-              >
-                Cancel
-              </button>
-
-              <button
-                className={styles.confirmDelete}
-                onClick={handleDeleteUser}
-                disabled={deletingId === deleteUser._id}
-              >
-                {deletingId === deleteUser._id ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 };

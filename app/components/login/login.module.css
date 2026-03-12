@@ -40,10 +40,18 @@
   gap: 16px;
 }
 
+.error {
+  color: #ef4444;
+  font-size: 13px;
+  margin: 0;
+}
+
 /* Inputs */
-.input {
+.input,
+.field {
   padding: 12px 14px;
   border-radius: 8px;
+  width: 100%;
   border: 1px solid var(--border-color);
   background: var(--bg-color);
   color: var(--text);

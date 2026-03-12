@@ -1,83 +1,43 @@
-"use client";
-import React, { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import styles from "../../components/dashboard/products/products.module.css";
 import { MdAdd } from "react-icons/md";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import Pagination from "../../components/dashboard/pagination/Pagination";
+import { deleteProductAction, getProducts } from "../../lib/actions";
 
-const PRODUCTS_PER_PAGE = 10;
+const ALLOWED_IMAGE_HOSTS = new Set(["images.unsplash.com"]);
 
-const ProductsPage = () => {
-  const router = useRouter();
-
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [deleteProduct, setDeleteProduct] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Fetch products
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch("/api/products");
-        const data = await res.json();
-
-        if (data.success) {
-          setProducts(data.products);
-        }
-      } catch (error) {
-        console.error("Fetch products error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  // Delete product
-  const handleDelete = async () => {
-    try {
-      await fetch(`/api/products/${deleteProduct._id}`, {
-        method: "DELETE",
-      });
-
-      setProducts((prev) => prev.filter((p) => p._id !== deleteProduct._id));
-
-      setDeleteProduct(null);
-    } catch (error) {
-      console.error("Delete error:", error);
-    }
-  };
-
-  // Filter products
-  const filteredProducts = useMemo(() => {
-    return products.filter((p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [products, search]);
-
-  const totalPages =
-    Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE) || 1;
-
-  const start = (page - 1) * PRODUCTS_PER_PAGE;
-
-  const paginatedProducts = filteredProducts.slice(
-    start,
-    start + PRODUCTS_PER_PAGE,
-  );
-
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages);
-    }
-  }, [page, totalPages]);
-
-  if (loading) {
-    return <p className="p-6">Loading products...</p>;
+function getSafeImageSrc(imageUrl) {
+  if (!imageUrl || typeof imageUrl !== "string") {
+    return "/images/noavatar.png";
   }
+
+  if (imageUrl.startsWith("/")) {
+    return imageUrl;
+  }
+
+  try {
+    const parsed = new URL(imageUrl);
+    return ALLOWED_IMAGE_HOSTS.has(parsed.hostname)
+      ? imageUrl
+      : "/images/noavatar.png";
+  } catch {
+    return "/images/noavatar.png";
+  }
+}
+
+const ProductsPage = async ({ searchParams }) => {
+  const resolvedSearchParams = await searchParams;
+  const query = String(resolvedSearchParams?.q || "").toLowerCase().trim();
+  const error = resolvedSearchParams?.error
+    ? String(resolvedSearchParams.error)
+    : "";
+
+  const response = await getProducts();
+  const products = response.success ? response.products || [] : [];
+
+  const filteredProducts = query
+    ? products.filter((p) => p.name.toLowerCase().includes(query))
+    : products;
 
   return (
     <section className="p-6">
@@ -86,24 +46,20 @@ const ProductsPage = () => {
         <h2 className={styles.title}>Products</h2>
 
         <div className={styles.searchContainer}>
-          <input
-            type="text"
-            placeholder="Search for a product..."
-            className={styles.search}
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-          />
+          <form method="GET" style={{ display: "contents" }}>
+            <input
+              type="text"
+              name="q"
+              placeholder="Search for a product..."
+              className={styles.search}
+              defaultValue={query}
+            />
+          </form>
 
-          <button
-            className={styles.addButton}
-            onClick={() => router.push("/dashboard/products/add")}
-          >
+          <Link href="/dashboard/products/add" className={styles.addButton}>
             <MdAdd size={20} />
             Add New
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -121,12 +77,23 @@ const ProductsPage = () => {
           </thead>
 
           <tbody>
-            {paginatedProducts.map((product) => (
+            {filteredProducts.length === 0 && (
+              <tr>
+                <td
+                  colSpan={5}
+                  style={{ textAlign: "center", padding: "16px" }}
+                >
+                  No products found.
+                </td>
+              </tr>
+            )}
+
+            {filteredProducts.map((product) => (
               <tr key={product._id}>
                 <td>
                   <div className={styles.product}>
                     <Image
-                      src={product.imageUrl}
+                      src={getSafeImageSrc(product.imageUrl)}
                       alt={product.name}
                       width={40}
                       height={40}
@@ -142,21 +109,19 @@ const ProductsPage = () => {
 
                 <td>
                   <div className={styles.buttons}>
-                    <button
+                    <Link
                       className={styles.view}
-                      onClick={() =>
-                        router.push(`/dashboard/products/${product._id}`)
-                      }
+                      href={`/dashboard/products/${product._id}`}
                     >
                       View
-                    </button>
+                    </Link>
 
-                    <button
-                      className={styles.delete}
-                      onClick={() => setDeleteProduct(product)}
-                    >
-                      Delete
-                    </button>
+                    <form action={deleteProductAction}>
+                      <input type="hidden" name="id" value={product._id} />
+                      <button className={styles.delete} type="submit">
+                        Delete
+                      </button>
+                    </form>
                   </div>
                 </td>
               </tr>
@@ -165,33 +130,8 @@ const ProductsPage = () => {
         </table>
       </div>
 
-      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-
-      {/* Delete Modal */}
-      {deleteProduct && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h3>Delete Product</h3>
-
-            <p>
-              Are you sure you want to delete <b>{deleteProduct.name}</b>?
-            </p>
-
-            <div className={styles.modalButtons}>
-              <button
-                className={styles.cancel}
-                onClick={() => setDeleteProduct(null)}
-              >
-                Cancel
-              </button>
-
-              <button className={styles.confirmDelete} onClick={handleDelete}>
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {!response.success && <p className="p-4 text-red-500">{response.message}</p>}
+      {error && <p className="p-4 text-red-500">{error}</p>}
     </section>
   );
 };

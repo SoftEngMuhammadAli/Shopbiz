@@ -1,12 +1,22 @@
-import { connectToDatabase } from "@/lib/mongodb";
+import mongoose from "mongoose";
+import connectToDatabase from "@/app/lib/config/db";
 import { NextResponse } from "next/server";
-import Product from "@/lib/models/product.model";
+import Product from "@/app/lib/models/product.model";
 
-export async function DELETE(request, { params }) {
+export async function DELETE(_request, { params }) {
   try {
+    const { id } = await params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid product id" },
+        { status: 400 },
+      );
+    }
+
     await connectToDatabase();
 
-    const deletedProduct = await Product.findByIdAndDelete(params.id);
+    const deletedProduct = await Product.findByIdAndDelete(id);
 
     if (!deletedProduct) {
       return NextResponse.json(
@@ -26,11 +36,20 @@ export async function DELETE(request, { params }) {
     );
   }
 }
-export async function GET(request, { params }) {
+export async function GET(_request, { params }) {
   try {
+    const { id } = await params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid product id" },
+        { status: 400 },
+      );
+    }
+
     await connectToDatabase();
 
-    const product = await Product.findById(params.id);
+    const product = await Product.findById(id);
 
     if (!product) {
       return NextResponse.json(
