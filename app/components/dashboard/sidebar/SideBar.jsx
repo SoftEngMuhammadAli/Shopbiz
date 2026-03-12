@@ -15,8 +15,6 @@ import {
   MdWork,
 } from "react-icons/md";
 
-import favicon from "../../../../app/favicon.ico";
-
 const SideBar = () => {
   const menuItems = [
     {
@@ -77,7 +75,7 @@ const SideBar = () => {
     <div className={styles.container}>
       <div className={styles.user}>
         <Image
-          src={favicon}
+          src="/images/noavatar.png"
           alt="John Doe"
           width={50}
           height={50}

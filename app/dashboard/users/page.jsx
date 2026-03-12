@@ -6,6 +6,7 @@ import { MdAdd } from "react-icons/md";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { DELETEUSER, GETUSERS } from "../../lib/services/api.services";
+import Pagination from "../../components/dashboard/pagination/Pagination";
 
 const USERS_PER_PAGE = 10;
 
@@ -197,19 +198,7 @@ const UsersPage = () => {
 
       {error && <p className="p-4 text-red-500">{error}</p>}
 
-      {/* Pagination */}
-      <div className={styles.pagination}>
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
-          Previous
-        </button>
-
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
-        >
-          Next
-        </button>
-      </div>
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       {/* Delete Modal */}
       {deleteUser && (

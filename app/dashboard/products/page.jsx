@@ -1,54 +1,12 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import styles from "../../components/dashboard/products/products.module.css";
 import { MdAdd } from "react-icons/md";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Pagination from "../../components/dashboard/pagination/Pagination";
 
-const products = [
-  {
-    id: 1,
-    name: "iPhone 15",
-    price: "$999",
-    stock: 23,
-    created: "Oct 30 2023",
-    img: "/images/product.jpg",
-  },
-  {
-    id: 2,
-    name: "MacBook Pro",
-    price: "$1999",
-    stock: 15,
-    created: "Oct 29 2023",
-    img: "/images/product.jpg",
-  },
-  {
-    id: 3,
-    name: "AirPods",
-    price: "$249",
-    stock: 54,
-    created: "Oct 28 2023",
-    img: "/images/product.jpg",
-  },
-  {
-    id: 4,
-    name: "Apple Watch",
-    price: "$399",
-    stock: 32,
-    created: "Oct 27 2023",
-    img: "/images/product.jpg",
-  },
-  {
-    id: 5,
-    name: "iPad Pro",
-    price: "$899",
-    stock: 12,
-    created: "Oct 26 2023",
-    img: "/images/product.jpg",
-  },
-];
-
-const PRODUCTS_PER_PAGE = 2;
+const PRODUCTS_PER_PAGE = 10;
 
 const ProductsPage = () => {
   const router = useRouter();
@@ -56,20 +14,70 @@ const ProductsPage = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [deleteProduct, setDeleteProduct] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/products");
+        const data = await res.json();
+
+        if (data.success) {
+          setProducts(data.products);
+        }
+      } catch (error) {
+        console.error("Fetch products error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Delete product
+  const handleDelete = async () => {
+    try {
+      await fetch(`/api/products/${deleteProduct._id}`, {
+        method: "DELETE",
+      });
+
+      setProducts((prev) => prev.filter((p) => p._id !== deleteProduct._id));
+
+      setDeleteProduct(null);
+    } catch (error) {
+      console.error("Delete error:", error);
+    }
+  };
+
+  // Filter products
   const filteredProducts = useMemo(() => {
     return products.filter((p) =>
       p.name.toLowerCase().includes(search.toLowerCase()),
     );
-  }, [search]);
+  }, [products, search]);
 
-  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const totalPages =
+    Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE) || 1;
 
   const start = (page - 1) * PRODUCTS_PER_PAGE;
+
   const paginatedProducts = filteredProducts.slice(
     start,
     start + PRODUCTS_PER_PAGE,
   );
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  if (loading) {
+    return <p className="p-6">Loading products...</p>;
+  }
 
   return (
     <section className="p-6">
@@ -114,12 +122,12 @@ const ProductsPage = () => {
 
           <tbody>
             {paginatedProducts.map((product) => (
-              <tr key={product.id}>
+              <tr key={product._id}>
                 <td>
                   <div className={styles.product}>
                     <Image
-                      src={product.img}
-                      alt=""
+                      src={product.imageUrl}
+                      alt={product.name}
                       width={40}
                       height={40}
                       className={styles.productImage}
@@ -128,16 +136,16 @@ const ProductsPage = () => {
                   </div>
                 </td>
 
-                <td>{product.price}</td>
+                <td>${product.price}</td>
                 <td>{product.stock}</td>
-                <td>{product.created}</td>
+                <td>{new Date(product.createdAt).toLocaleDateString()}</td>
 
                 <td>
                   <div className={styles.buttons}>
                     <button
                       className={styles.view}
                       onClick={() =>
-                        router.push(`/dashboard/products/${product.id}`)
+                        router.push(`/dashboard/products/${product._id}`)
                       }
                     >
                       View
@@ -157,19 +165,7 @@ const ProductsPage = () => {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className={styles.pagination}>
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
-          Previous
-        </button>
-
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
-        >
-          Next
-        </button>
-      </div>
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       {/* Delete Modal */}
       {deleteProduct && (
@@ -189,13 +185,7 @@ const ProductsPage = () => {
                 Cancel
               </button>
 
-              <button
-                className={styles.confirmDelete}
-                onClick={() => {
-                  console.log("Delete product:", deleteProduct.id);
-                  setDeleteProduct(null);
-                }}
-              >
+              <button className={styles.confirmDelete} onClick={handleDelete}>
                 Delete
               </button>
             </div>

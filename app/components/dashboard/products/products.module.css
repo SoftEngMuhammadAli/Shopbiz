@@ -100,22 +100,6 @@
   cursor: pointer;
 }
 
-/* Pagination */
-
-.pagination {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 18px;
-}
-
-.pagination button {
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-soft);
-  color: var(--text);
-}
-
 /* Modal */
 
 .modalOverlay {
