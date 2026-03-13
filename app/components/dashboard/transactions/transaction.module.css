@@ -7,6 +7,14 @@
   overflow-x: auto;
 }
 
+.container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.container::-webkit-scrollbar {
+  display: none;
+}
+
 .title {
   font-size: 18px;
   font-weight: 600;

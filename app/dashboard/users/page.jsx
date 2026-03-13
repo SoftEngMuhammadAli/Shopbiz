@@ -6,7 +6,9 @@ import { deleteUserAction, getUsers } from "../../lib/actions";
 
 const UsersPage = async ({ searchParams }) => {
   const resolvedSearchParams = await searchParams;
-  const query = String(resolvedSearchParams?.q || "").toLowerCase().trim();
+  const query = String(resolvedSearchParams?.q || "")
+    .toLowerCase()
+    .trim();
   const error = resolvedSearchParams?.error
     ? String(resolvedSearchParams.error)
     : "";
@@ -88,7 +90,10 @@ const UsersPage = async ({ searchParams }) => {
                 <td>{user.role}</td>
                 <td>
                   <div className={styles.buttons}>
-                    <Link href={`/dashboard/users/${user._id}`} className={styles.view}>
+                    <Link
+                      href={`/dashboard/users/${user._id}`}
+                      className={styles.view}
+                    >
                       View
                     </Link>
                     <form action={deleteUserAction}>
@@ -105,7 +110,9 @@ const UsersPage = async ({ searchParams }) => {
         </table>
       </div>
 
-      {!response.success && <p className="p-4 text-red-500">{response.message}</p>}
+      {!response.success && (
+        <p className="p-4 text-red-500">{response.message}</p>
+      )}
       {error && <p className="p-4 text-red-500">{error}</p>}
     </section>
   );
