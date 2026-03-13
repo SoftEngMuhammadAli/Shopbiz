@@ -1,8 +1,11 @@
 /* Main wrapper */
 .main {
   min-height: 100vh;
-  background: #f8fafc;
-  padding: 24px;
+  background:
+    radial-gradient(circle at 12% 15%, #1e3a8a 0%, transparent 40%),
+    radial-gradient(circle at 88% 18%, #0ea5e9 0%, transparent 32%),
+    linear-gradient(170deg, #e2e8f0 0%, #f8fafc 45%, #dbeafe 100%);
+  padding: clamp(16px, 4vw, 28px);
 
   display: flex;
   align-items: center;
@@ -12,55 +15,61 @@
 /* Card container */
 .card {
   width: 100%;
-  max-width: 768px;
+  max-width: 720px;
 
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 18px;
 
-  padding: 32px;
+  padding: clamp(22px, 4vw, 42px);
 
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 24px 54px rgba(15, 23, 42, 0.14);
+  backdrop-filter: blur(6px);
 }
 
 /* Title */
 .title {
-  font-size: 30px;
-  font-weight: 600;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 700;
   color: #0f172a;
+  line-height: 1.1;
 }
 
 /* Subtitle */
 .subtitle {
-  margin-top: 8px;
+  margin-top: 10px;
   color: #475569;
-  font-size: 15px;
+  font-size: clamp(14px, 2.8vw, 16px);
 }
 
 /* Buttons container */
 .actions {
-  margin-top: 24px;
+  margin-top: 26px;
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 /* Login button */
 .loginButton {
-  background: #0f172a;
+  background: linear-gradient(140deg, #0f172a 0%, #1e293b 100%);
   color: white;
 
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
 
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 
   text-decoration: none;
-  transition: background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .loginButton:hover {
-  background: #020617;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.22);
 }
 
 /* Dashboard button */
@@ -68,16 +77,31 @@
   border: 1px solid #cbd5e1;
   color: #334155;
 
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
 
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 
   text-decoration: none;
-  transition: background 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .dashboardButton:hover {
   background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .actions {
+    flex-direction: column;
+  }
+
+  .loginButton,
+  .dashboardButton {
+    text-align: center;
+    width: 100%;
+  }
 }

@@ -1,21 +1,22 @@
 .container {
-  background: var(--bg-soft);
+  background: linear-gradient(160deg, #121d35 0%, #15213d 100%);
   border: 1px solid var(--border-color);
-  border-radius: 14px;
-  padding: 20px;
-  margin-top: 20px;
+  border-radius: var(--radius-lg);
+  padding: clamp(14px, 2vw, 22px);
+  margin-top: 16px;
+  box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.12);
 }
 
 .title {
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   color: var(--text);
 }
 
 .chart {
   width: 100%;
-  height: 350px;
+  height: clamp(260px, 42vw, 360px);
 }
 
 /* Responsive */

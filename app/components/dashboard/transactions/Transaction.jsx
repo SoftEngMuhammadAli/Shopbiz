@@ -53,10 +53,10 @@ const Transaction = () => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <td>Name</td>
-            <td>Status</td>
-            <td>Date</td>
-            <td>Amount</td>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Amount</th>
           </tr>
         </thead>
 

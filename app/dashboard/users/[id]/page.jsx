@@ -2,6 +2,27 @@ import Image from "next/image";
 import styles from "../../../components/dashboard/users/usersview.module.css";
 import { getUserById, updateUserAction } from "@/app/lib/actions";
 
+const ALLOWED_IMAGE_HOSTS = new Set(["images.unsplash.com"]);
+
+function getSafeImageSrc(imageUrl) {
+  if (!imageUrl || typeof imageUrl !== "string") {
+    return "/images/noavatar.png";
+  }
+
+  if (imageUrl.startsWith("/")) {
+    return imageUrl;
+  }
+
+  try {
+    const parsed = new URL(imageUrl);
+    return ALLOWED_IMAGE_HOSTS.has(parsed.hostname)
+      ? imageUrl
+      : "/images/noavatar.png";
+  } catch {
+    return "/images/noavatar.png";
+  }
+}
+
 const UserView = async ({ params, searchParams }) => {
   const { id } = await params;
   const resolvedSearchParams = await searchParams;

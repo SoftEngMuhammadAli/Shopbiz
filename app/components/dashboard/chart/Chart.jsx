@@ -30,12 +30,16 @@ const data = [
 ];
 
 const Chart = () => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Sales Analytics</h2>
 
       <div className={styles.chart}>
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minHeight={260}>
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="5 5" stroke="var(--border-color)" />
 

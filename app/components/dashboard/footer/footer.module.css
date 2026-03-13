@@ -1,6 +1,6 @@
 .container {
   width: 100%;
-  padding: 18px 28px;
+  padding: 16px var(--space-page);
   margin-top: auto;
 
   display: flex;
@@ -29,7 +29,8 @@
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     text-align: center;
+    padding: 14px 12px;
   }
 }

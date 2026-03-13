@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./sidebar.module.css";
 import LogoutButton from "./LogoutButton";
+import { usePathname } from "next/navigation";
 
 import {
   MdAnalytics,
@@ -19,6 +20,8 @@ import {
 } from "react-icons/md";
 
 const SideBar = ({ onNavigate }) => {
+  const pathname = usePathname();
+
   const menuItems = [
     {
       title: "Pages",
@@ -85,17 +88,25 @@ const SideBar = ({ onNavigate }) => {
           <span className={styles.catTitle}>{cat.title}</span>
 
           <div className={styles.nav}>
-            {cat.list.map((item) => (
-              <Link
-                key={item.path}
-                href={item.path}
-                className={styles.item}
-                onClick={onNavigate}
-              >
-                <span className={styles.icon}>{item.icon}</span>
-                <span>{item.title}</span>
-              </Link>
-            ))}
+            {cat.list.map((item) => {
+              const isActive =
+                item.path === "/dashboard"
+                  ? pathname === item.path
+                  : pathname === item.path ||
+                    pathname.startsWith(`${item.path}/`);
+
+              return (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  className={`${styles.item} ${isActive ? styles.active : ""}`}
+                  onClick={onNavigate}
+                >
+                  <span className={styles.icon}>{item.icon}</span>
+                  <span>{item.title}</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       ))}

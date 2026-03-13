@@ -1,5 +1,6 @@
 .container {
-  height: 100vh;
+  height: 100%;
+  min-height: 100vh;
   padding: 18px 14px;
   display: flex;
   flex-direction: column;
@@ -12,8 +13,9 @@
   gap: 12px;
   padding: 14px 12px;
   margin-bottom: 18px;
-  border-radius: 14px;
+  border-radius: 16px;
   background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .userImage {
@@ -49,7 +51,7 @@
 }
 
 .cat {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .catTitle {
@@ -72,7 +74,7 @@
   align-items: center;
   gap: 10px;
   color: var(--text-soft);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 12px 12px;
   font-size: 15px;
   font-weight: 500;
@@ -89,10 +91,14 @@
   transform: translateX(2px);
 }
 
-.item:hover,
 .active {
-  background-color: #2e374a;
+  background: linear-gradient(145deg, #2d3a58 0%, #25324e 100%);
   color: #fff;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.active .icon {
+  color: #a5b4fc;
 }
 
 .icon {
@@ -103,21 +109,24 @@
 }
 
 .logout {
-  padding: 10px 16px;
-  background-color: #b71c1c;
+  padding: 11px 16px;
+  background: linear-gradient(150deg, #dc2626 0%, #b91c1c 100%);
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   width: 100%;
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   margin-top: auto;
   align-self: flex-start;
 }
 
 .logout:hover {
-  background-color: #c62828;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(220, 38, 38, 0.28);
 }
 
 @media (max-width: 900px) {

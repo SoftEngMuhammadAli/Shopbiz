@@ -53,6 +53,7 @@ const ProductView = async ({ params, searchParams }) => {
           alt={product.name || "Product image"}
           width={200}
           height={200}
+          className={styles.productImage}
         />
       </div>
 

@@ -40,7 +40,7 @@ const ProductsPage = async ({ searchParams }) => {
     : products;
 
   return (
-    <section className="p-6">
+    <section className={styles.page}>
       {/* Header */}
       <div className={styles.header}>
         <h2 className={styles.title}>Products</h2>
@@ -130,8 +130,8 @@ const ProductsPage = async ({ searchParams }) => {
         </table>
       </div>
 
-      {!response.success && <p className="p-4 text-red-500">{response.message}</p>}
-      {error && <p className="p-4 text-red-500">{error}</p>}
+      {!response.success && <p className={styles.errorText}>{response.message}</p>}
+      {error && <p className={styles.errorText}>{error}</p>}
     </section>
   );
 };

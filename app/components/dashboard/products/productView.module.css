@@ -1,30 +1,46 @@
 .container {
-  display: flex;
-  gap: 30px;
-  padding: 20px;
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 16px;
+  padding: 0;
 }
 
 .imageCard {
-  width: 260px;
-  background: var(--bg-soft);
-  border-radius: 12px;
+  background: linear-gradient(160deg, #121d35 0%, #15213d 100%);
+  border-radius: var(--radius-md);
   padding: 20px;
   text-align: center;
   border: 1px solid var(--border-color);
+  height: fit-content;
+  box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.12);
+}
+
+.productImage {
+  width: min(100%, 200px);
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
 }
 
 .details {
   flex: 1;
-  background: var(--bg-soft);
+  background: linear-gradient(160deg, #121d35 0%, #15213d 100%);
   padding: 24px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
+  box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.12);
+}
+
+.details h2 {
+  margin-bottom: 12px;
+  font-size: clamp(22px, 3vw, 28px);
+  line-height: 1.15;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .field label {
@@ -35,32 +51,53 @@
 
 .field input,
 .field textarea {
-  padding: 10px;
-  border-radius: 6px;
+  padding: 10px 11px;
+  border-radius: 8px;
   border: 1px solid var(--border-color);
   background: var(--bg-color);
   color: var(--text);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.14);
 }
 
 .updateBtn {
-  margin-top: 14px;
+  margin-top: 10px;
   width: 100%;
   padding: 12px;
-  background: #14b8a6;
+  background: linear-gradient(140deg, #14b8a6 0%, #0d9488 100%);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.updateBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(20, 184, 166, 0.24);
 }
 
 @media (max-width: 900px) {
   .container {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 16px;
     padding: 0;
-  }
-
-  .imageCard {
-    width: 100%;
   }
 
   .details {
